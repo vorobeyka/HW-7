@@ -1,6 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using RequestProcessor.App.Menu;
+using RequestProcessor.App.Services;
+using RequestProcessor.App.Logging;
+using RequestProcessor.App.Models;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using System.Net.Http;
 
 namespace RequestProcessor.App
 {
@@ -10,6 +17,10 @@ namespace RequestProcessor.App
     internal class Program
     {
         /// <summary>
+        /// Options file path.
+        /// </summary>
+        private static readonly string _optionsFilePath = "options.json";
+        /// <summary>
         /// Entry point.
         /// </summary>
         /// <returns>Returns exit code.</returns>
@@ -17,8 +28,15 @@ namespace RequestProcessor.App
         {
             try
             {
-                // ToDo: Null arguments should be replaced with correct implementations.
-                var mainMenu = new MainMenu(null, null, null);
+                var options = new OptionsSource(_optionsFilePath);
+                var logger = new Logger();
+                var client = new HttpClient();
+                var requestHandler = new RequestHandler(client);
+                var responseHandler = new ResponseHandler();
+                var requestPerformer = new RequestPerformer(requestHandler, responseHandler, logger);
+
+                var mainMenu = new MainMenu(requestPerformer, options, logger);
+
                 return await mainMenu.StartAsync();
             }
             catch (Exception ex)

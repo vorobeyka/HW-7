@@ -10,6 +10,9 @@ namespace RequestProcessor.App.Services
     /// </summary>
     internal class RequestPerformer : IRequestPerformer
     {
+        private readonly IRequestHandler _requestHandler;
+        private readonly IResponseHandler _responseHandler;
+        private readonly ILogger _logger;
         /// <summary>
         /// Constructor with DI.
         /// </summary>
@@ -21,7 +24,9 @@ namespace RequestProcessor.App.Services
             IResponseHandler responseHandler,
             ILogger logger)
         {
-            throw new NotImplementedException();
+            _requestHandler = requestHandler;
+            _responseHandler = responseHandler;
+            _logger = logger;
         }
 
         /// <inheritdoc/>
@@ -29,7 +34,10 @@ namespace RequestProcessor.App.Services
             IRequestOptions requestOptions, 
             IResponseOptions responseOptions)
         {
-            throw new NotImplementedException();
+            var response = await _requestHandler.HandleRequestAsync(requestOptions);
+            await _responseHandler.HandleResponseAsync(response, requestOptions, responseOptions);
+            //TODO
+            return true;
         }
     }
 }
