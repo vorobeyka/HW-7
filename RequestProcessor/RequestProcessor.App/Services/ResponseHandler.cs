@@ -10,8 +10,8 @@ namespace RequestProcessor.App.Services
     {
         public async Task HandleResponseAsync(IResponse response, IRequestOptions requestOptions, IResponseOptions responseOptions)
         {
-            var fileStream = new FileStream(responseOptions.Path, FileMode.OpenOrCreate, FileAccess.Write);
             if (!response.Handled) return;
+            await File.WriteAllTextAsync(responseOptions.Path, response.Content);
         }
     }
 }

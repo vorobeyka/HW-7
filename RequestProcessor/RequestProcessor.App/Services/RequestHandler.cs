@@ -1,4 +1,5 @@
 ﻿using RequestProcessor.App.Models;
+using RequestProcessor.App.Mappings;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -18,11 +19,14 @@ namespace RequestProcessor.App.Services
 
         public async Task<IResponse> HandleRequestAsync(IRequestOptions requestOptions)
         {
-            /*if (requestOptions == null) throw new ArgumentNullException(nameof(requestOptions));
+            if (requestOptions == null) throw new ArgumentNullException(nameof(requestOptions));
             if (!requestOptions.IsValid) throw new ArgumentOutOfRangeException(nameof(requestOptions));
 
-            using var message = new HttpRequestMessage();*/
-            throw new NotImplementedException();
+            _client.Timeout = new TimeSpan(0, 0, 10);
+            var method = await HttpMethodsMappings.GetHttpMethod(requestOptions.Method);
+            using var message = new HttpRequestMessage(method, new Uri(requestOptions.Address));
+            using var response = await _client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
+            return new Response(response.IsSuccessStatusCode, 123, response.Content.ToString());
         }
     }
 }

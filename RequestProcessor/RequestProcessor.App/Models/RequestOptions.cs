@@ -25,7 +25,6 @@ namespace RequestProcessor.App.Models
 
         public RequestOptions()
         {
-
         }
     }
 }

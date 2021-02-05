@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RequestProcessor.App.Logging;
 using RequestProcessor.App.Services;
+using RequestProcessor.App.Exceptions;
 
 namespace RequestProcessor.App.Menu
 {
@@ -33,16 +34,20 @@ namespace RequestProcessor.App.Menu
         public async Task<int> StartAsync()
         {
             Console.WriteLine("HTTP request processor\nby Andrey Basystyi");
-            var options = await _optionsSource.GetOptionsAsync();
-            var tasks = options.Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
-            if (true)
+            try
             {
-                return 0;
+                var options = await _optionsSource.GetOptionsAsync();
+                var tasks = options.Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
+                Console.WriteLine($"Start {tasks.Length} http-requests.\n Please Wait");
+                var result = Task.WhenAll(tasks);
             }
-            else
+            catch (PerformException ex)
             {
+                Console.WriteLine($"Error: {ex.Message}");
                 return -1;
             }
+
+            return 0;
         }
     }
 }
