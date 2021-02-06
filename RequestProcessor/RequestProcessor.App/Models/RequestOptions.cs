@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace RequestProcessor.App.Models
 {
@@ -9,15 +6,20 @@ namespace RequestProcessor.App.Models
     {
         [JsonPropertyName("path")]
         public string Path { get; set; }
+
         [JsonPropertyName("name")]
         public string Name { get; set; }
+
         [JsonPropertyName("address")]
         public string Address { get; set; }
+
         [JsonPropertyName("method")]
-        public string RequestMethodAsString {get; set;}
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public RequestMethod Method { get; set; }
+
         [JsonPropertyName("contentType")]
         public string ContentType { get; set; }
+
         [JsonPropertyName("body")]
         public string Body { get; set; }
 

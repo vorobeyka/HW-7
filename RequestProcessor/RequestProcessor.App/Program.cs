@@ -3,10 +3,6 @@ using System.Threading.Tasks;
 using RequestProcessor.App.Menu;
 using RequestProcessor.App.Services;
 using RequestProcessor.App.Logging;
-using RequestProcessor.App.Models;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using System.Net.Http;
 
 namespace RequestProcessor.App
@@ -42,7 +38,7 @@ namespace RequestProcessor.App
             catch (Exception ex)
             {
                 Console.WriteLine("Critical unhandled exception");
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.GetType());
                 return -1;
             }
         }
