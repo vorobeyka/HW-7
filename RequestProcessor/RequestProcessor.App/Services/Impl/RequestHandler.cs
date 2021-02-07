@@ -28,8 +28,7 @@ namespace RequestProcessor.App.Services.Impl
                 message.Content.Headers.Add(requestOptions.Name, requestOptions.Body);
                 message.Content.Headers.ContentType.MediaType = requestOptions.ContentType;
             }
-
-            using var response = await _client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
+            using var response = await _client.SendAsync(message);
             return new Response(response.IsSuccessStatusCode, (int)response.StatusCode, response.Content.ToString());
         }
 

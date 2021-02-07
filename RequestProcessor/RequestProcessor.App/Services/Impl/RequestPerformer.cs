@@ -45,6 +45,7 @@ namespace RequestProcessor.App.Services
             }
             catch (Exception ex)
             {
+                Console.WriteLine("HYI");
                 _logger.Log(ex, "Create empty response");
                 response = new Response(false, 0, null);
                 returnValue = false;
