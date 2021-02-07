@@ -52,6 +52,7 @@ namespace RequestProcessor.App.Menu
                     Console.WriteLine("All elements are invalid");
                     return 0;
                 }
+
                 var tasks = options.Where(opt => opt.Item1.IsValid && opt.Item2.IsValid)
                     .Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
                 Console.WriteLine($"Start {tasks.Length} http-requests");
@@ -60,8 +61,7 @@ namespace RequestProcessor.App.Menu
             }
             catch (PerformException ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                return -1;
+                throw ex;
             }
             return 0;
         }

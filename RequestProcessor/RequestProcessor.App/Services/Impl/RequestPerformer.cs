@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using RequestProcessor.App.Logging;
 using RequestProcessor.App.Models;
+using RequestProcessor.App.Models.Impl;
 using RequestProcessor.App.Exceptions;
 
 namespace RequestProcessor.App.Services
@@ -35,28 +36,25 @@ namespace RequestProcessor.App.Services
             IRequestOptions requestOptions, 
             IResponseOptions responseOptions)
         {
+            IResponse response = null;
             try
             {
-                var response = await _requestHandler.HandleRequestAsync(requestOptions);
-                await _responseHandler.HandleResponseAsync(response, requestOptions, responseOptions);
+                response = await _requestHandler.HandleRequestAsync(requestOptions);
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
-
-            }
-            catch (System.Net.Http.HttpRequestException ex)
-            {
-
-            }
-            catch (PerformException ex)
-            {
-                throw ex;
+                Console.WriteLine("Task CANCELED!FFFFFFFFFFFFFFFFFFFFFFFFFFF");
+                response = new Response(false, 0, null);
             }
             catch (Exception ex)
             {
-                _logger.Log(ex, "unexpected exception on request perform");
+                Console.WriteLine("Task CANCELED!FFFFFFFFFFFFFFFFFFFFFFFFFFF");
+                throw new PerformException(ex.Message, ex);
             }
-            //TODO
+            finally
+            {
+                await _responseHandler.HandleResponseAsync(response, requestOptions, responseOptions);
+            }
             return true;
         }
     }

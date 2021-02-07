@@ -39,7 +39,7 @@ namespace RequestProcessor.App
             catch (Exception ex)
             {
                 Console.WriteLine("Critical unhandled exception");
-                Console.WriteLine(ex.GetType());
+                Console.WriteLine(ex);
                 return -1;
             }
         }
