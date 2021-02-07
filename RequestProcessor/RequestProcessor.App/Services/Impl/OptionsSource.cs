@@ -29,14 +29,6 @@ namespace RequestProcessor.App.Services.Impl
 
         private static bool IsValidOptions(RequestOptions options)
         {
-            try
-            {
-                new Uri(options.Address);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
             return !(string.IsNullOrEmpty(options.Name)
                      || string.IsNullOrEmpty(options.Address)
                      || (string.IsNullOrEmpty(options.ContentType) && !string.IsNullOrEmpty(options.Body))

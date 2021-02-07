@@ -36,26 +36,30 @@ namespace RequestProcessor.App.Services
             IRequestOptions requestOptions, 
             IResponseOptions responseOptions)
         {
-            IResponse response = null;
+            var returnValue = true;
+            IResponse response;
             try
             {
+                _logger.Log($"Start request {requestOptions.Name}");
                 response = await _requestHandler.HandleRequestAsync(requestOptions);
-            }
-            catch (TaskCanceledException)
-            {
-                Console.WriteLine("Task CANCELED!FFFFFFFFFFFFFFFFFFFFFFFFFFF");
-                response = new Response(false, 0, null);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Task CANCELED!FFFFFFFFFFFFFFFFFFFFFFFFFFF");
-                throw new PerformException(ex.Message, ex);
+                _logger.Log(ex, "Create empty response");
+                response = new Response(false, 0, null);
+                returnValue = false;
             }
-            finally
+
+            try
             {
+                _logger.Log($"Start response handle\nHandled: {response.Handled}\nCode: {response.Code}");
                 await _responseHandler.HandleResponseAsync(response, requestOptions, responseOptions);
             }
-            return true;
+            catch (Exception ex)
+            {
+                throw new PerformException(ex.Message, ex.InnerException);
+            }
+            return returnValue;
         }
     }
 }

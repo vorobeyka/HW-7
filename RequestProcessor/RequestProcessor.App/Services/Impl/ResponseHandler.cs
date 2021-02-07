@@ -10,7 +10,6 @@ namespace RequestProcessor.App.Services
     {
         public async Task HandleResponseAsync(IResponse response, IRequestOptions requestOptions, IResponseOptions responseOptions)
         {
-            if (!response.Handled) return;
             await File.WriteAllTextAsync(responseOptions.Path, response.Content);
         }
     }

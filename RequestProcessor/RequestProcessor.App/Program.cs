@@ -27,7 +27,10 @@ namespace RequestProcessor.App
             {
                 var options = new OptionsSource(_optionsFilePath);
                 var logger = new Logger();
-                var client = new HttpClient();
+                var client = new HttpClient
+                {
+                    Timeout = new TimeSpan(0, 0, 10)
+                };
                 var requestHandler = new RequestHandler(client);
                 var responseHandler = new ResponseHandler();
                 var requestPerformer = new RequestPerformer(requestHandler, responseHandler, logger);

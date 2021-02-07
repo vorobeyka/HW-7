@@ -1,9 +1,7 @@
 ﻿using RequestProcessor.App.Models;
 using RequestProcessor.App.Models.Impl;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RequestProcessor.App.Services.Impl
@@ -22,15 +20,17 @@ namespace RequestProcessor.App.Services.Impl
             if (requestOptions == null) throw new ArgumentNullException(nameof(requestOptions));
             if (!requestOptions.IsValid) throw new ArgumentOutOfRangeException(nameof(requestOptions));
 
-            _client.Timeout = new TimeSpan(0,0,0,0,0);
             var httpMethod = MapMethod(requestOptions.Method);
 
             using var message = new HttpRequestMessage(httpMethod, new Uri(requestOptions.Address));
-            message.Headers.Add(requestOptions.Name, requestOptions.Body);
-            message.Content.Headers.ContentType.MediaType = requestOptions.ContentType;
+            if (httpMethod != HttpMethod.Get)
+            {
+                message.Content.Headers.Add(requestOptions.Name, requestOptions.Body);
+                message.Content.Headers.ContentType.MediaType = requestOptions.ContentType;
+            }
 
             using var response = await _client.SendAsync(message, HttpCompletionOption.ResponseContentRead);
-            return new Response(response.IsSuccessStatusCode, 123, response.Content.ToString());
+            return new Response(response.IsSuccessStatusCode, (int)response.StatusCode, response.Content.ToString());
         }
 
         private static HttpMethod MapMethod(RequestMethod method)

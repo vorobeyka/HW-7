@@ -57,11 +57,16 @@ namespace RequestProcessor.App.Menu
                     .Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
                 Console.WriteLine($"Start {tasks.Length} http-requests");
                 var result = Task.WhenAll(tasks);
+                if (result.IsFaulted)
+                {
+                    throw result.Exception.InnerException;
+                }
                 Console.WriteLine("All tasks completed");
             }
             catch (PerformException ex)
             {
-                throw ex;
+                Console.WriteLine($"Error: {ex.Message}");
+                return -1;
             }
             return 0;
         }
