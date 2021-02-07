@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using RequestProcessor.App.Menu;
 using RequestProcessor.App.Services;
+using RequestProcessor.App.Services.Impl;
 using RequestProcessor.App.Logging;
 using System.Net.Http;
 

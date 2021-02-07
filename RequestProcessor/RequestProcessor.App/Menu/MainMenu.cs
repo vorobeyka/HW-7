@@ -36,17 +36,33 @@ namespace RequestProcessor.App.Menu
             Console.WriteLine("HTTP request processor\nby Andrey Basystyi");
             try
             {
-                var options = await _optionsSource.GetOptionsAsync();
-                var tasks = options.Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
-                Console.WriteLine($"Start {tasks.Length} http-requests.\n Please Wait");
+                Console.WriteLine("Reading from json...");
+                var options = (await _optionsSource.GetOptionsAsync());
+                Console.WriteLine($"Was read {options.Count()} elements\nWhere:");
+
+                var validOptions = options.Where(opt => opt.Item1.IsValid).Count();
+                var notValidOptions = options.Where(opt => !opt.Item1.IsValid).Count();
+                Console.WriteLine($"{validOptions} are valid");
+                if (notValidOptions != 0)
+                {
+                    Console.WriteLine($"{notValidOptions} are invalid");
+                }
+                if (validOptions == 0)
+                {
+                    Console.WriteLine("All elements are invalid");
+                    return 0;
+                }
+                var tasks = options.Where(opt => opt.Item1.IsValid && opt.Item2.IsValid)
+                    .Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
+                Console.WriteLine($"Start {tasks.Length} http-requests");
                 var result = Task.WhenAll(tasks);
+                Console.WriteLine("All tasks completed");
             }
             catch (PerformException ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 return -1;
             }
-
             return 0;
         }
     }

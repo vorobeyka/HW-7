@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RequestProcessor.App.Models
+namespace RequestProcessor.App.Models.Impl
 {
     internal class RequestOptions : IRequestOptions, IResponseOptions
     {
@@ -24,6 +24,7 @@ namespace RequestProcessor.App.Models
         public string Body { get; set; }
 
         public bool IsValid { get; set; }
+
 
         public RequestOptions()
         {

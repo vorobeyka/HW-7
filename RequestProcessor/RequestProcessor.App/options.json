@@ -11,6 +11,14 @@
     "name": "NBU Rates (XML)",
     "address": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?xml",
     "method": "GET",
+    "contentType": "smth",
+    "body": "smth",
+    "path": "nbu_rates1.xml"
+  },
+  {
+    "name": "NBU Rates (XML)",
+    "address": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?xml",
+    "method": "GET",
     "contentType": null,
     "body": null,
     "path": "nbu_rates.xml"
