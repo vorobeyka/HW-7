@@ -3,6 +3,7 @@ using RequestProcessor.App.Models.Impl;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace RequestProcessor.App.Services.Impl
 {
@@ -21,12 +22,11 @@ namespace RequestProcessor.App.Services.Impl
             if (!requestOptions.IsValid) throw new ArgumentOutOfRangeException(nameof(requestOptions));
 
             var httpMethod = MapMethod(requestOptions.Method);
-
             using var message = new HttpRequestMessage(httpMethod, new Uri(requestOptions.Address));
             if (httpMethod != HttpMethod.Get)
             {
                 message.Content.Headers.Add(requestOptions.Name, requestOptions.Body);
-                message.Content.Headers.ContentType.MediaType = requestOptions.ContentType;
+                message.Content = new StringContent(requestOptions.ContentType);
             }
             using var response = await _client.SendAsync(message);
             return new Response(response.IsSuccessStatusCode, (int)response.StatusCode, response.Content.ToString());

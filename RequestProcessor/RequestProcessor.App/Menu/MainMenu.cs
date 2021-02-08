@@ -33,42 +33,52 @@ namespace RequestProcessor.App.Menu
 
         public async Task<int> StartAsync()
         {
-            Console.WriteLine("HTTP request processor\nby Andrey Basystyi");
+            Console.WriteLine("HTTP request processor\nby Andrey Basystyi\nReading from json...");
+
+            var options = (await _optionsSource.GetOptionsAsync());
+            var validOptions = options.Where(opt => opt.Item1.IsValid).Count();
+            var notValidOptions = options.Where(opt => !opt.Item1.IsValid).Count();
+
+            #region Print valid/not valid options
+            Console.WriteLine($"Was read {options.Count()} elements\nWhere:");
+            _logger.Log($"Read {options.Count()} elements");
+            Console.WriteLine($"{validOptions} are valid");
+            _logger.Log($"Valid options: {validOptions}");
+            if (notValidOptions != 0)
+            {
+                Console.WriteLine($"{notValidOptions} are invalid");
+                _logger.Log($"Invalid options: {notValidOptions}");
+            }
+            #endregion
+            if (options.Count() == 0)
+            {
+                Console.WriteLine("Empty options list");
+                _logger.Log("Empty options");
+            }
+
             try
             {
-                Console.WriteLine("Reading from json...");
-                var options = (await _optionsSource.GetOptionsAsync());
-                Console.WriteLine($"Was read {options.Count()} elements\nWhere:");
-
-                var validOptions = options.Where(opt => opt.Item1.IsValid).Count();
-                var notValidOptions = options.Where(opt => !opt.Item1.IsValid).Count();
-                Console.WriteLine($"{validOptions} are valid");
-                if (notValidOptions != 0)
-                {
-                    Console.WriteLine($"{notValidOptions} are invalid");
-                }
-                if (validOptions == 0)
-                {
-                    Console.WriteLine("All elements are invalid");
-                    return 0;
-                }
-
-                var tasks = options.Where(opt => opt.Item1.IsValid && opt.Item2.IsValid)
-                    .Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
+                var tasks = options.Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
                 Console.WriteLine($"Start {tasks.Length} http-requests");
-                var result = Task.WhenAll(tasks);
-                if (result.IsFaulted)
-                {
-                    throw result.Exception.InnerException;
-                }
-                Console.WriteLine("All tasks completed");
+                var result = await Task.WhenAll(tasks);
+                PrintResult(result);
+                return result.Any(r => r == false) ? -1 : 0;
             }
             catch (PerformException ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                _logger.Log(ex, "Handled PerformException");
                 return -1;
             }
-            return 0;
+        }
+
+        private static void PrintResult(bool[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Console.WriteLine($"Request №{i + 1}: {(array[i] ? "success" : "failed")}");
+            }
+            Console.WriteLine("All tasks completed");
         }
     }
 }

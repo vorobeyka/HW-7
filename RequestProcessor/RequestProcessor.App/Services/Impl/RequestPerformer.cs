@@ -43,9 +43,18 @@ namespace RequestProcessor.App.Services
                 _logger.Log($"Start request {requestOptions.Name}");
                 response = await _requestHandler.HandleRequestAsync(requestOptions);
             }
+            catch (ArgumentNullException ex)
+            {
+                _logger.Log(ex, $"Argument {ex.ParamName} is Null");
+                return false;
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                _logger.Log(ex, "Invlaid options element");
+                return false;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine("HYI");
                 _logger.Log(ex, "Create empty response");
                 response = new Response(false, 0, null);
                 returnValue = false;
