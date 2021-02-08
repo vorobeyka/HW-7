@@ -2,8 +2,8 @@
 using RequestProcessor.App.Models.Impl;
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace RequestProcessor.App.Services.Impl
 {
@@ -23,13 +23,15 @@ namespace RequestProcessor.App.Services.Impl
 
             var httpMethod = MapMethod(requestOptions.Method);
             using var message = new HttpRequestMessage(httpMethod, new Uri(requestOptions.Address));
-            if (httpMethod != HttpMethod.Get)
+            if (httpMethod != HttpMethod.Get && requestOptions.ContentType != null)
             {
-                message.Content.Headers.Add(requestOptions.Name, requestOptions.Body);
-                message.Content = new StringContent(requestOptions.ContentType);
+                message.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(requestOptions.ContentType));
+                message.Content = new StringContent(requestOptions.Body ?? "");
             }
             using var response = await _client.SendAsync(message);
-            return new Response(response.IsSuccessStatusCode, (int)response.StatusCode, response.Content.ToString());
+            return new Response(response.IsSuccessStatusCode,
+                                (int)response.StatusCode,
+                                await response.Content.ReadAsStringAsync());
         }
 
         private static HttpMethod MapMethod(RequestMethod method)

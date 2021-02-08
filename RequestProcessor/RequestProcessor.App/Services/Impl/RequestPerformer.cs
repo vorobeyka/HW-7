@@ -64,9 +64,11 @@ namespace RequestProcessor.App.Services
             {
                 _logger.Log($"Start response handle\nHandled: {response.Handled}\nCode: {response.Code}");
                 await _responseHandler.HandleResponseAsync(response, requestOptions, responseOptions);
+                _logger.Log($"Response was handled");
             }
             catch (Exception ex)
             {
+                _logger.Log($"Response was not handled. Throw PerformException");
                 throw new PerformException(ex.Message, ex.InnerException);
             }
             return returnValue;

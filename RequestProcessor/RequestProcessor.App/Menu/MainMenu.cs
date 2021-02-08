@@ -36,13 +36,13 @@ namespace RequestProcessor.App.Menu
             Console.WriteLine("HTTP request processor\nby Andrey Basystyi\nReading from json...");
 
             var options = (await _optionsSource.GetOptionsAsync());
-            var validOptions = options.Where(opt => opt.Item1.IsValid).Count();
-            var notValidOptions = options.Where(opt => !opt.Item1.IsValid).Count();
+            var validOptions = options.Where(opt => opt.Item1.IsValid && opt.Item2.IsValid).Count();
+            var notValidOptions = options.Where(opt => !opt.Item1.IsValid || !opt.Item2.IsValid).Count();
 
             #region Print valid/not valid options
             Console.WriteLine($"Was read {options.Count()} elements\nWhere:");
-            _logger.Log($"Read {options.Count()} elements");
             Console.WriteLine($"{validOptions} are valid");
+            _logger.Log($"Read {options.Count()} elements");
             _logger.Log($"Valid options: {validOptions}");
             if (notValidOptions != 0)
             {
@@ -59,7 +59,7 @@ namespace RequestProcessor.App.Menu
             try
             {
                 var tasks = options.Select(opt => _performer.PerformRequestAsync(opt.Item1, opt.Item2)).ToArray();
-                Console.WriteLine($"Start {tasks.Length} http-requests");
+                Console.WriteLine($"Start {tasks.Length} http-requests...");
                 var result = await Task.WhenAll(tasks);
                 PrintResult(result);
                 return result.Any(r => r == false) ? -1 : 0;
