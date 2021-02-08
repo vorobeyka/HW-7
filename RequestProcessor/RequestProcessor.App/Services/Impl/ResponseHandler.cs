@@ -8,8 +8,9 @@ namespace RequestProcessor.App.Services
     {
         public async Task HandleResponseAsync(IResponse response, IRequestOptions requestOptions, IResponseOptions responseOptions)
         {
-            await File.WriteAllTextAsync(responseOptions.Path,
-                $"Name: ${requestOptions.Name}\n$Code: ${response.Code}\n{response.Content}");
+            var header = $"Name: {requestOptions.Name}\nIsValid: {requestOptions.IsValid}\n" +
+                $"Handled: {response.Handled}\nCode: {response.Code}";
+            await File.WriteAllTextAsync(responseOptions.Path, $"{header}\n{response.Content}");
         }
     }
 }
